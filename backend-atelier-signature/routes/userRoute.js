@@ -1,7 +1,7 @@
 import express from "express";
 import { register, login } from "../controllers/userController.js";
 import { verifyToken } from "../middlewares/auth.js";
-import { pool } from "../config/db.js";
+import pool  from "../config/db.js";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();

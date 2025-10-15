@@ -1,7 +1,7 @@
-import { pool } from "../config/db.js";
+import pool  from "../config/db.js";
 
 export class User {
-  // 🔹 Trouver un utilisateur par email
+  //Trouver un utilisateur par email
   static async findByEmail(email) {
     try {
       const [rows] = await pool.query(
@@ -15,7 +15,7 @@ export class User {
     }
   }
 
-  // 🔹 Créer un nouvel utilisateur
+  //Créer un nouvel utilisateur
   static async create({ firstName, lastName, email, password, role }) {
     try {
       const [result] = await pool.query(
@@ -30,7 +30,7 @@ export class User {
     }
   }
 
-  // 🔹 Trouver un utilisateur par ID
+  //Trouver un utilisateur par ID
   static async findById(id) {
     try {
       const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);

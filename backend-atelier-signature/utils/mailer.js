@@ -14,10 +14,10 @@ const transporter = nodemailer.createTransport({
 
 export const sendVerificationEmail = async (email, firstName) => {
   try {
-    // ✅ Génère un vrai token JWT avec la même clé que dans ton .env
+    //Génère un vrai token JWT avec la même clé que dans ton .env
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "24h" });
 
-    // ✅ Lien de confirmation avec le token
+    //Lien de confirmation avec le token
     const confirmationLink = `http://localhost:5000/api/users/verify?token=${token}`;
 
     const mailOptions = {
@@ -34,7 +34,7 @@ export const sendVerificationEmail = async (email, firstName) => {
             <a href="${confirmationLink}"
                style="background-color:#c27ba0;color:#fff;padding:12px 20px;
                       text-decoration:none;border-radius:8px;font-weight:bold;">
-               ✅ Confirmer mon inscription
+                Confirmer mon inscription
             </a>
           </p>
           <p>Ce lien est valable 24 heures.</p>
@@ -43,7 +43,7 @@ export const sendVerificationEmail = async (email, firstName) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`📩 Mail de confirmation envoyé à ${email}`);
+    console.log(`Mail de confirmation envoyé à ${email}`);
   } catch (error) {
     console.error("Erreur lors de l’envoi du mail :", error);
   }

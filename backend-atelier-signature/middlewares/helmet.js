@@ -1,6 +1,6 @@
 import helmet from "helmet";
 
-// Configuration personnalisée de Helmet
+// Configuration de Helmet
 export const helmetMiddleware = helmet({
   contentSecurityPolicy: {
     directives: {
@@ -11,5 +11,5 @@ export const helmetMiddleware = helmet({
       upgradeInsecureRequests: [],
     },
   },
-  crossOriginEmbedderPolicy: false, // utile si tu utilises des APIs externes
+  crossOriginEmbedderPolicy: false, 
 });

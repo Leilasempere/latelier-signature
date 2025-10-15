@@ -1,9 +1,9 @@
 import rateLimit from "express-rate-limit";
 
-// 🔹 Limiteur global : limite toutes les requêtes API
+
 export const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // 200 requêtes par IP
+  windowMs: 15 * 60 * 1000, 
+  max: 20, 
   message: {
     message: "Trop de requêtes effectuées depuis cette adresse IP. Réessayez plus tard.",
   },
@@ -11,10 +11,10 @@ export const globalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// 🔹 Limiteur spécifique pour la route /login
+
 export const loginLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5, // 5 tentatives de connexion
+  windowMs: 10 * 60 * 1000,
+  max: 5,
   message: {
     message: "Trop de tentatives de connexion. Réessayez dans 10 minutes.",
   },
