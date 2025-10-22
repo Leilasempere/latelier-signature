@@ -6,7 +6,7 @@ import { corsMiddleware } from "./middlewares/cors.js";
 import { globalLimiter, loginLimiter } from "./middlewares/ratelimiter.js";
 import { helmetMiddleware } from "./middlewares/helmet.js";
 import formationRoutes from "./routes/formationRoute.js";
-
+import commandeRoutes from "./routes/commandeRoute.js";
 dotenv.config();
 
 const app = express();
@@ -31,6 +31,7 @@ app.use(helmetMiddleware);
 //Routes principales
 app.use("/api/users",loginLimiter, userRoutes);
 app.use("/api/formations", formationRoutes);
+app.use("/api/commandes", commandeRoutes);
 
 app.get("/", (req, res) => {
   res.send(" API L’Atelier Signature fonctionne");

@@ -6,26 +6,26 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-//Enregistrement d’un utilisateur
+
 export const register = async (req, res) => {
   const { firstName, lastName, email, password, confirmPassword, role } = req.body;
 
   try {
-    // Vérification des mots de passe
+    
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Les mots de passe ne correspondent pas." });
     }
 
-    //Vérification si l'email est déjà utilisé
+    
     const existing = await User.findByEmail(email);
     if (existing.length > 0) {
       return res.status(409).json({ message: "Email déjà utilisé." });
     }
 
-    // Hashage du mot de passe
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Création de l'utilisateur dans la base de données
+    
     const userId = await User.create({
       firstName,
       lastName,
@@ -34,21 +34,21 @@ export const register = async (req, res) => {
       role: role || "client",
     });
 
-    // Envoi du mail de vérification 
+  
     try {
       await sendVerificationEmail(email, firstName);
     } catch (mailError) {
       console.error("Erreur d’envoi du mail :", mailError);
     }
 
-    res.status(201).json({ message: "Utilisateur créé avec succès.", userId });
+    res.status(201).json({ message: " Utilisateur créé. Vérifiez vos emails pour activer votre compte.", userId });
   } catch (error) {
     console.error("Erreur serveur (register):", error);
     res.status(500).json({ message: "Erreur serveur.", error: error.message });
   }
 };
 
-//Connexion d’un utilisateur
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
