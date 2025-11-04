@@ -1,6 +1,5 @@
-import helmet from "helmet";
+import helmet from 'helmet';
 
-// Configuration de Helmet
 export const helmetMiddleware = helmet({
   contentSecurityPolicy: {
     directives: {
