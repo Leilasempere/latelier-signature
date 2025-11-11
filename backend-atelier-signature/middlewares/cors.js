@@ -1,13 +1,22 @@
 import cors from "cors";
 
-// Configuration CORS 
-const corsOptions = {
-  origin: [
-    "http://localhost:5173", 
-    "https://lateliersignature.com" 
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-};
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://latelier-signature.onrender.com",
+  "https://lateliersignature.com"
+];
 
-export const corsMiddleware = cors(corsOptions);
+export const corsMiddleware = cors({
+  origin: (origin, callback) => {
+    // Autorise les requêtes sans origin (ex : Stripe Webhooks, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn("❌ Origin non autorisée :", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+});
