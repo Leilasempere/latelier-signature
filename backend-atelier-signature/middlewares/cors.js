@@ -4,7 +4,7 @@ import cors from "cors";
 const corsOptions = {
   origin: [
     "http://localhost:5173", 
-    "https://lateliersignature.com" // nom de domaine en production
+    "https://lateliersignature.com" 
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,

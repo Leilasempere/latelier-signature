@@ -7,9 +7,14 @@ import { globalLimiter, loginLimiter } from "./middlewares/ratelimiter.js";
 import { helmetMiddleware } from "./middlewares/helmet.js";
 import formationRoutes from "./routes/formationRoute.js";
 import commandeRoutes from "./routes/commandeRoute.js";
+import paymentRoutes from "./routes/paymentRoute.js";
+
 dotenv.config();
 
+
 const app = express();
+
+app.use("/api/payments", paymentRoutes);
 
 //Middlewares globaux
 app.use(corsMiddleware);
