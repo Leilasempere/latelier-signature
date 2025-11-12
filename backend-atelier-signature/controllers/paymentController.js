@@ -69,5 +69,5 @@ export const stripeWebhook = async (req, res) => {
     }
   }
 
-  res.status(200).json({ received: true });
+  res.status(200).json({ url: session.url });
 };

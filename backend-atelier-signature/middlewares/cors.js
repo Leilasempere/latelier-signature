@@ -12,7 +12,7 @@ export const corsMiddleware = cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.warn("❌ Origin non autorisée :", origin);
+      console.warn(" Origin non autorisée :", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
