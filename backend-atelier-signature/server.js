@@ -15,15 +15,27 @@ dotenv.config();
 
 const app = express();
 
+// 1. CORS + JSON
 app.use(corsMiddleware);
-
 app.use(express.json());
 
-
+// 2. Helmet (avant toutes les routes)
 app.use(helmetMiddleware);
+
+// 3. Route paiement (jamais limitée)
+app.use("/api/payments", paymentRoutes);
+
+// 4. Route users avec loginLimiter
+app.use("/api/users", loginLimiter, userRoutes);
+
+// 5. Global limiter appliqué APRÈS les routes critiques
 app.use(globalLimiter);
 
+// 6. Le reste des routes API
+app.use("/api/formations", formationRoutes);
+app.use("/api/commandes", commandeRoutes);
 
+// Vérification DB
 (async () => {
   try {
     const connection = await pool.getConnection();
@@ -34,17 +46,10 @@ app.use(globalLimiter);
   }
 })();
 
-
-app.use("/api/users", loginLimiter, userRoutes);
-app.use("/api/formations", formationRoutes);
-app.use("/api/commandes", commandeRoutes);
-app.use("/api/payments", paymentRoutes);
-
-
+// Route test
 app.get("/", (req, res) => {
   res.send("API L’Atelier Signature fonctionne parfaitement !");
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

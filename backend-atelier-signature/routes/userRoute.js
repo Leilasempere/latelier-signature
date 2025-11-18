@@ -6,10 +6,8 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
-//  Route d’inscription
-router.post("/register", register);
 
-// Route de vérification d’e-mail
+router.post("/register", register)
 router.get("/verify", async (req, res) => {
   const { token } = req.query;
 
