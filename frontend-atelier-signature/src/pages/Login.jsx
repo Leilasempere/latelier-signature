@@ -1,57 +1,101 @@
 import { useState } from "react";
-import { loginUser } from "../services/userService";
-import { useAuth } from "../context/useAuth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const location = useLocation();
+
+  const redirect = new URLSearchParams(location.search).get("redirect");
+  const formationId = new URLSearchParams(location.search).get("formation");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const redirectToStripe = async () => {
     try {
-      const userData = await loginUser(form);
-      login(userData);
-      navigate("/");
-    } catch {
-      setError("Email ou mot de passe incorrect");
+      const { data } = await axios.post(
+        import.meta.env.VITE_API_URL + "/api/payments/create-checkout-session",
+        {
+          formationId,
+          userId: user.id,
+        }
+      );
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      setError("Impossible de rediriger vers le paiement.");
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const success = await login(email, password);
+
+    if (!success) {
+      setError("Identifiants incorrects.");
+      return;
+    }
+
+    if (redirect === "buy" && formationId) {
+      return redirectToStripe();
+    }
+
+    navigate("/");
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white p-8 shadow-md rounded-lg w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Connexion</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
 
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="border w-full p-2 mb-3 rounded"
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Mot de passe"
-          value={form.password}
-          onChange={handleChange}
-          className="border w-full p-2 mb-3 rounded"
-          required
-        />
+        <h2 className="text-3xl font-bold mb-6 text-center">Connexion</h2>
 
-        <button className="bg-black text-white w-full py-2 rounded hover:bg-gray-800">
-          Se connecter
-        </button>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-        {error && <p className="text-center text-sm mt-3 text-red-500">{error}</p>}
-      </form>
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          <input
+            type="email"
+            placeholder="Adresse email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full border border-gray-300 rounded-lg p-3"
+          />
+
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full border border-gray-300 rounded-lg p-3"
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
+          >
+            Se connecter
+          </button>
+        </form>
+
+        <p className="text-center mt-6 text-gray-600">
+          Pas encore de compte ?{" "}
+          <Link
+            to={`/register?redirect=${redirect}&formation=${formationId}`}
+            className="text-black font-medium underline"
+          >
+            Créer un compte
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
