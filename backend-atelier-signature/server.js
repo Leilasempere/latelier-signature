@@ -18,12 +18,13 @@ const app = express();
 app.set("trust proxy", 1);
 
 
-// ⚠️ Stripe Webhook DOIT être avant express.json()
-// On monte la route paiement AVANT express.json()
-app.use("/api/payments", paymentRoutes);
-
 // CORS
 app.use(corsMiddleware);
+
+// Routes Paiements
+app.use("/api/payments", paymentRoutes);
+
+
 
 // Body parser JSON (après le webhook Stripe)
 app.use(express.json());
