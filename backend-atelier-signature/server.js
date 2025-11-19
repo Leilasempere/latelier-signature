@@ -15,23 +15,29 @@ dotenv.config();
 
 const app = express();
 
-// 1. CORS + JSON
-app.use(corsMiddleware);
-app.use(express.json());
+app.set("trust proxy", 1);
 
-// 2. Helmet (avant toutes les routes)
-app.use(helmetMiddleware);
 
-// 3. Route paiement (jamais limitée)
+// ⚠️ Stripe Webhook DOIT être avant express.json()
+// On monte la route paiement AVANT express.json()
 app.use("/api/payments", paymentRoutes);
 
-// 4. Route users avec loginLimiter
+// CORS
+app.use(corsMiddleware);
+
+// Body parser JSON (après le webhook Stripe)
+app.use(express.json());
+
+// Sécurité
+app.use(helmetMiddleware);
+
+// Routes Users (avec limite login)
 app.use("/api/users", loginLimiter, userRoutes);
 
-// 5. Global limiter appliqué APRÈS les routes critiques
+// Rate limiter global
 app.use(globalLimiter);
 
-// 6. Le reste des routes API
+// Autres routes API
 app.use("/api/formations", formationRoutes);
 app.use("/api/commandes", commandeRoutes);
 

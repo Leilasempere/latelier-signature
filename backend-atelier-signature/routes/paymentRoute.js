@@ -4,10 +4,14 @@ import bodyParser from "body-parser";
 
 const router = express.Router();
 
-// Route pour créer une session Stripe
-router.post("/create-checkout-session", createCheckoutSession);
+//  Stripe Webhook DOIT utiliser raw body
+router.post(
+  "/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  stripeWebhook
+);
 
-// Webhook Stripe (doit recevoir le raw body)
-router.post("/webhook", bodyParser.raw({ type: "application/json" }), stripeWebhook);
+// Session checkout
+router.post("/create-checkout-session", createCheckoutSession);
 
 export default router;
