@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -13,14 +13,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [shouldRedirectToStripe, setShouldRedirectToStripe] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (shouldRedirectToStripe && user) {
-      redirectToStripe();
-    }
-  }, [shouldRedirectToStripe, user]);
 
   const redirectToStripe = async () => {
     try {
@@ -51,27 +44,29 @@ export default function Login() {
     }
 
     if (redirect === "buy" && formationId) {
-      setShouldRedirectToStripe(true);
-      return;
+      return redirectToStripe();
     }
 
     navigate("/");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+
         <h2 className="text-3xl font-bold mb-6 text-center">Connexion</h2>
 
-        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Adresse email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border p-3 rounded-lg"
+            required
+            className="w-full border border-gray-300 rounded-lg p-3"
           />
 
           <input
@@ -79,22 +74,23 @@ export default function Login() {
             placeholder="Mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border p-3 rounded-lg"
+            required
+            className="w-full border border-gray-300 rounded-lg p-3"
           />
 
           <button
             type="submit"
-            className="w-full bg-black text-white p-3 rounded-lg"
+            className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
           >
             Se connecter
           </button>
         </form>
 
-        <p className="text-center mt-4 text-gray-600">
-          Pas de compte ?{" "}
+        <p className="text-center mt-6 text-gray-600">
+          Pas encore de compte ?{" "}
           <Link
             to={`/register?redirect=${redirect}&formation=${formationId}`}
-            className="text-black underline"
+            className="text-black font-medium underline"
           >
             Créer un compte
           </Link>
