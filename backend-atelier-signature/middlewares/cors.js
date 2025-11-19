@@ -1,23 +1,13 @@
-import cors from "cors";
+export const corsMiddleware = (req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*"); 
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://latelier-signature.onrender.com",
-  "https://lateliersignature.com"
-];
+  // Pour les pré-requêtes CORS  
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
 
-export const corsMiddleware = cors({
-  origin: (origin, callback) => {
-    // Autorise les requêtes sans origin (ex : Stripe Webhooks, Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(" Origin non autorisée :", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-});
+  next();
+};
 
