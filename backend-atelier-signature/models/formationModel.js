@@ -20,9 +20,9 @@ export const Formation = {
 
   // Créer une nouvelle formation
   create: async ({ title, description, price, category }) => {
-    const sql = `INSERT INTO formations (title, description, price, category) VALUES (?, ?, ?, ?)`;
-    const [result] = await pool.execute(sql, [title, description, price, category]);
-    return { id: result.insertId, title, description, price, category };
+    const sql = `INSERT INTO formations (title, description, price, category, detailed_formation) VALUES (?, ?, ?, ?)`;
+    const [result] = await pool.execute(sql, [title, description, price, category, detailed_formation]);
+    return { id: result.insertId, title, description, price, category, detailed_formation };
   },
 
   // Retirer une formation
