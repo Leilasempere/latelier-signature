@@ -7,11 +7,16 @@ export default function BuyButton({ formation }) {
   const { user } = useAuth();
 
   const handleBuy = async () => {
+    // 1️⃣ Sauvegarde l'ID de la formation avant Stripe
+    localStorage.setItem("lastFormationId", formation.id);
+
+    // 2️⃣ Si utilisateur pas connecté → redirection
     if (!user) {
       return navigate(`/login?redirect=buy&formation=${formation.id}`);
     }
 
     try {
+      // 3️⃣ Demande une session Stripe au backend
       const { data } = await axios.post(
         "https://latelier-signature.onrender.com/api/payments/create-checkout-session",
         {
@@ -20,6 +25,7 @@ export default function BuyButton({ formation }) {
         }
       );
 
+      // 4️⃣ Redirige vers Stripe Checkout
       window.location.href = data.url;
     } catch (error) {
       console.error("Erreur paiement :", error);

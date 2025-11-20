@@ -32,6 +32,11 @@ export default function FormationDetail() {
         Prix : {formation.price} €
       </p>
 
+      <div
+  className="mt-6 leading-relaxed text-gray-700 whitespace-pre-line"
+  dangerouslySetInnerHTML={{ __html: formation.detailed_formation }}
+     ></div>
+
       <BuyButton formation={formation} />
     </div>
   );
