@@ -1,14 +1,17 @@
+// controllers/paymentController.js
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import { Formation } from "../models/formationModel.js";
-import nodemailer from "nodemailer";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import { sendMail } from "../utils/mailer.js";
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// ----------------------
+// 1️⃣ Création session Stripe
+// ----------------------
 export const createCheckoutSession = async (req, res) => {
   try {
     const { formationId, userId } = req.body;
@@ -19,14 +22,11 @@ export const createCheckoutSession = async (req, res) => {
       });
     }
 
-    // 🔍 Récupérer la formation
     const formation = await Formation.findById(formationId);
-
     if (!formation) {
       return res.status(404).json({ message: "Formation introuvable." });
     }
 
-    // 🧾 Création session Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -48,8 +48,7 @@ export const createCheckoutSession = async (req, res) => {
       metadata: {
         userId,
         formationId,
-      },
-      
+      }
     });
 
     return res.json({ url: session.url });
@@ -63,14 +62,20 @@ export const createCheckoutSession = async (req, res) => {
   }
 };
 
-// Mappage formation-id → PDF
+
+// ----------------------
+// 2️⃣ Mappage formations → PDFs
+// ----------------------
 const PDF_MAP = {
   1: "pdfBodysculptDuo.pdf",
   2: "pdfDermaSkinGlow.pdf",
   3: "pdfVacuoLift.pdf",
 };
 
-//  Envoi du PDF après paiement
+
+// ----------------------
+// 3️⃣ Après paiement : envoi email + PDF
+// ----------------------
 export const paymentSuccess = async (req, res) => {
   try {
     const { email, formationId } = req.body;
@@ -84,28 +89,18 @@ export const paymentSuccess = async (req, res) => {
       return res.status(400).json({ error: "PDF introuvable pour cette formation" });
     }
 
-    // Résoudre le chemin physique du fichier PDF
+    // Chemin du PDF
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    const filePath = path.join(__dirname, "..", "pdf", pdfFile);
+    const filePath = path.join(__dirname, "..", "utils", "pdfs", pdfFile);
 
-    // Transporter déjà compatible avec Gmail
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.GMAIL_USER}>`,
+    // 📧 Envoi email via Brevo
+    await sendMail({
       to: email,
       subject: "Votre formation - Atelier Signature",
       html: `
-        <h2>Merci pour votre achat </h2>
-        <p>Vous trouverez en pièce jointe votre formation <b>${pdfFile}</b>.</p>
-        <p>N'hésitez pas à nous contacter si vous avez la moindre question !</p>
+        <h2>Merci pour votre achat 💖</h2>
+        <p>Vous trouverez votre formation en pièce jointe.</p>
       `,
       attachments: [
         {
@@ -122,4 +117,3 @@ export const paymentSuccess = async (req, res) => {
     return res.status(500).json({ error: "Erreur envoi email" });
   }
 };
-

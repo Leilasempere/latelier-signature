@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../models/userModel.js";
-import { sendVerificationEmail } from "../utils/mailer.js";
+import { sendMail } from "../utils/mailer.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -36,7 +36,7 @@ export const register = async (req, res) => {
 
   
     try {
-      await sendVerificationEmail(email, firstName);
+      await sendMail(email, firstName);
     } catch (mailError) {
       console.error("Erreur d’envoi du mail :", mailError);
     }
