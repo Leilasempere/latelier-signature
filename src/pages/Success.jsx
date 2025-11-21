@@ -11,7 +11,7 @@ export default function Success() {
         const formationId = localStorage.getItem("lastFormationId"); // récupère l'id
         if (!formationId || !user?.email) return;
 
-        await axios.post(`${import.meta.env.VITE_API_URL}/payment/success`, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/payment/success`, {
           email: user.email,
           formationId: Number(formationId),
         });
